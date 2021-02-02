@@ -11,6 +11,8 @@ class ngsimDataset(Dataset):
     def __init__(self, mat_file, t_h=30, t_f=50, d_s=2, enc_size = 64, grid_size = (13,3), n_lat = 3, n_lon = 3):
         self.D = scp.loadmat(mat_file)['traj']
         self.T = scp.loadmat(mat_file)['tracks']
+        self.lat_int = scp.loadmat(mat_file)['lat_intention_masks']
+        self.lon_int = scp.loadmat(mat_file)['lon_intention_masks']
         self.t_h = t_h  # length of track history
         self.t_f = t_f  # length of predicted trajectory
         self.d_s = d_s  # down sampling rate of all sequences
@@ -41,10 +43,12 @@ class ngsimDataset(Dataset):
 
         # Maneuvers 'lon_enc' = one-hot vector, 'lat_enc = one-hot vector
         lon_enc = np.zeros([self.n_lon])
-        lon_enc[int(self.D[idx, 7] - 1)] = 1
+        lon_enc[int(self.lon_int[idx] - 1)] = 1
+        # lon_enc[int(self.D[idx, 7] - 1)] = 1
 
         lat_enc = np.zeros([self.n_lat])
-        lat_enc[int(self.D[idx, 6] - 1)] = 1
+        lat_enc[int(self.lat_int[idx] - 1)] = 1
+        # lat_enc[int(self.D[idx, 6] - 1)] = 1
 
         return hist, fut, neighbors, lat_enc, lon_enc, dsId, vehId, t
 
