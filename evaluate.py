@@ -52,57 +52,86 @@ if args['intention_module']:
 else:
     net_fname = net_fname + '.tar'
 
-## Initialize data loaders
-tsSet = ngsimDataset('data/TestSet.mat')
-tsDataloader = DataLoader(tsSet, batch_size=128, shuffle=True, num_workers=8, collate_fn=tsSet.collate_fn)
-
-lossVals = torch.zeros(args['out_length'])
-counts = torch.zeros(args['out_length'])
-
-if args['use_cuda']:
+if (args['use_cuda']):
+    net.load_state_dict(torch.load(net_fname), strict=False)
     net = net.cuda()
-    lossVals = lossVals.cuda()
-    counts = counts.cuda()
+else:
+    net.load_state_dict(torch.load(net_fname , map_location= lambda storage, loc: storage), strict=False)
 
-for i, data in enumerate(tsDataloader):
+# Test Cases
+# us101, i80
+ds_name = 'i80'
+test_dataset_files = ['TestSet_mnvr_new_corrected', 'TestSet_mnvr_new_corrected_' + ds_name + '_arb_left', 'TestSet_mnvr_new_corrected_' + ds_name + '_keeping',
+                       'TestSet_mnvr_new_corrected_' + ds_name + '_merging', 'TestSet_mnvr_new_corrected_' + ds_name + '_right']
 
-    hist, nbrs, mask, lat_enc, lon_enc, fut, op_mask, \
-    ds_ids, vehicle_ids, frame_ids = data
+outf_bname = 'outfiles/' + args['pooling'] + '/'
+if args['intention_module']:
+    outf_bname = 'outfiles/' + args['pooling'] + '_Mnvr/'
+
+
+for ds_ctr, ds_name in enumerate(test_dataset_files):
+
+
+    ## Initialize data loaders
+    tstSubset = ds_name
+    tsSet = ngsimDataset('data/' + tstSubset + '.mat')
+    tsDataloader = DataLoader(tsSet, batch_size=128, shuffle=True, num_workers=8, collate_fn=tsSet.collate_fn)
+
+    lossVals = torch.zeros(args['out_length'])
+    counts = torch.zeros(args['out_length'])
+    lossVals_x = torch.zeros(args['out_length'])
+    lossVals_y = torch.zeros(args['out_length'])
 
     if args['use_cuda']:
-        hist = hist.cuda()
-        nbrs = nbrs.cuda()
-        mask = mask.cuda()
-        lat_enc = lat_enc.cuda()
-        lon_enc = lon_enc.cuda()
-        fut = fut.cuda()
-        op_mask = op_mask.cuda()
-        ds_ids = ds_ids.cuda()
-        vehicle_ids = vehicle_ids.cuda()
-        frame_ids = frame_ids.cuda()
 
-    # Forward pass
-    if args['use_intention']:
-        fut_pred, lat_pred, lon_pred = net(hist, nbrs, mask, lat_enc, lon_enc)
-        fut_pred_max = torch.zeros_like(fut_pred[0])
-        for k in range(lat_pred.shape[0]):
-            lat_man = torch.argmax(lat_pred[k, :]).detach()
-            lon_man = torch.argmax(lon_pred[k, :]).detach()
-            indx = lon_man * args['num_lat_classes'] + lat_man
-            fut_pred_max[:, k, :] = fut_pred[indx][:, k, :]
-        l, c = maskedMSETest(fut_pred_max, fut, op_mask)
-    else:
-        fut_pred = net(hist, nbrs, mask)
-        l, c = maskedMSETest(fut_pred, fut, op_mask)
+        lossVals = lossVals.cuda()
+        counts = counts.cuda()
+        lossVals_x = lossVals_x.cuda()
+        lossVals_y = lossVals_y.cuda()
 
-    lossVals += l.detach()
-    counts += c.detach()
+    for i, data in enumerate(tsDataloader):
 
-print(torch.pow(lossVals / counts, 0.5))  # Calculate RMSE
-loss_total = torch.pow(lossVals / counts, 0.5)
-fname = 'outfiles/rmse_from_code_' + str(args['ip_dim']) +'D_intention_4s_latOnly.csv'
-rmse_file = open(fname, 'w')
-np.savetxt(rmse_file, loss_total.cpu())
+        hist, nbrs, mask, lat_enc, lon_enc, fut, op_mask, \
+        ds_ids, vehicle_ids, frame_ids = data
+
+        if args['use_cuda']:
+            hist = hist.cuda()
+            nbrs = nbrs.cuda()
+            mask = mask.cuda()
+            lat_enc = lat_enc.cuda()
+            lon_enc = lon_enc.cuda()
+            fut = fut.cuda()
+            op_mask = op_mask.cuda()
+            ds_ids = ds_ids.cuda()
+            vehicle_ids = vehicle_ids.cuda()
+            frame_ids = frame_ids.cuda()
+
+        # Forward pass
+        if args['use_intention']:
+            fut_pred, lat_pred, lon_pred = net(hist, nbrs, mask, lat_enc, lon_enc)
+            fut_pred_max = torch.zeros_like(fut_pred[0])
+            for k in range(lat_pred.shape[0]):
+                lat_man = torch.argmax(lat_pred[k, :]).detach()
+                lon_man = torch.argmax(lon_pred[k, :]).detach()
+                indx = lon_man * args['num_lat_classes'] + lat_man
+                fut_pred_max[:, k, :] = fut_pred[indx][:, k, :]
+            l, c = maskedMSETest(fut_pred_max, fut, op_mask)
+
+        else:
+            fut_pred = net(hist, nbrs, mask)
+            l, c = maskedMSETest(fut_pred, fut, op_mask)
+
+        lossVals += l.detach()
+        counts += c.detach()
+
+    print(tstSubset)
+    print(torch.pow(lossVals / counts, 0.5))  # Calculate RMSE
+    loss_total = torch.pow(lossVals / counts, 0.5)
+    fname = outf_bname + tstSubset + '_rmse_from_code.csv'
+    rmse_file = open(fname, 'w')
+    np.savetxt(rmse_file, loss_total.cpu())
+    # Close the opened files
+    rmse_file.close()
 
 
 
