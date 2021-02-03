@@ -66,7 +66,7 @@ test_dataset_files = ['TestSet_mnvr_new_corrected', 'TestSet_mnvr_new_corrected_
 
 outf_bname = 'outfiles/' + args['pooling'] + '/'
 if args['intention_module']:
-    outf_bname = 'outfiles/' + args['pooling'] + '_Mnvr/'
+    outf_bname = 'outfiles/' + args['pooling'] + '_mnvr/'
 
 
 for ds_ctr, ds_name in enumerate(test_dataset_files):
@@ -107,7 +107,7 @@ for ds_ctr, ds_name in enumerate(test_dataset_files):
             frame_ids = frame_ids.cuda()
 
         # Forward pass
-        if args['use_intention']:
+        if args['intention_module']:
             fut_pred, lat_pred, lon_pred = net(hist, nbrs, mask, lat_enc, lon_enc)
             fut_pred_max = torch.zeros_like(fut_pred[0])
             for k in range(lat_pred.shape[0]):
