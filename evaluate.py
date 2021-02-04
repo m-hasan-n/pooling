@@ -27,7 +27,7 @@ args['intention_module'] = True
 # Choose the pooling mechanism
 # 'slstm', 'cslstm', 'sgan'
 # -----------------------------
-args['pooling'] = 'sgan'
+args['pooling'] = 'slstm'
 
 if args['pooling'] == 'slstm':
     args['kernel_size'] = (4, 3)
@@ -79,15 +79,11 @@ for ds_ctr, ds_name in enumerate(test_dataset_files):
 
     lossVals = torch.zeros(args['out_length'])
     counts = torch.zeros(args['out_length'])
-    lossVals_x = torch.zeros(args['out_length'])
-    lossVals_y = torch.zeros(args['out_length'])
 
     if args['use_cuda']:
 
         lossVals = lossVals.cuda()
         counts = counts.cuda()
-        lossVals_x = lossVals_x.cuda()
-        lossVals_y = lossVals_y.cuda()
 
     for i, data in enumerate(tsDataloader):
 
@@ -126,12 +122,12 @@ for ds_ctr, ds_name in enumerate(test_dataset_files):
 
     print(tstSubset)
     print(torch.pow(lossVals / counts, 0.5))  # Calculate RMSE
-    loss_total = torch.pow(lossVals / counts, 0.5)
-    fname = outf_bname + tstSubset + '_rmse_from_code.csv'
-    rmse_file = open(fname, 'w')
-    # np.savetxt(rmse_file, loss_total.cpu())
-    # Close the opened files
-    rmse_file.close()
+    # loss_total = torch.pow(lossVals / counts, 0.5)
+    # fname = outf_bname + tstSubset + '_rmse_from_code.csv'
+    # rmse_file = open(fname, 'w')
+    # # np.savetxt(rmse_file, loss_total.cpu())
+    # # Close the opened files
+    # rmse_file.close()
 
 
 
