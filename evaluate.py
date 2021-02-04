@@ -121,8 +121,9 @@ for ds_ctr, ds_name in enumerate(test_dataset_files):
         counts += c.detach()
 
     print(tstSubset)
-    print(torch.pow(lossVals / counts, 0.5))  # Calculate RMSE
-    # loss_total = torch.pow(lossVals / counts, 0.5)
+    # Calculate RMSE in meters
+    print(torch.pow(lossVals / counts, 0.5) * 0.3048)
+    # loss_total = torch.pow(lossVals / counts, 0.5)* 0.3048
     # fname = outf_bname + tstSubset + '_rmse_from_code.csv'
     # rmse_file = open(fname, 'w')
     # # np.savetxt(rmse_file, loss_total.cpu())
