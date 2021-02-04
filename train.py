@@ -22,12 +22,12 @@ args['num_lon_classes'] = 3
 args['train_flag'] = True
 
 # Using Intention module?
-args['intention_module'] = True
+args['intention_module'] = False
 
 # Choose the pooling mechanism
 # 'slstm', 'cslstm', 'sgan'
 # -----------------------------
-args['pooling'] = 'cslstm'
+args['pooling'] = 'slstm'
 
 if args['pooling'] == 'slstm':
     args['kernel_size'] = (4, 3)
