@@ -27,7 +27,7 @@ args['intention_module'] = False
 # Choose the pooling mechanism
 # 'slstm', 'cslstm', 'sgan'
 # -----------------------------
-args['pooling'] = 'slstm'
+args['pooling'] = 'cslstm'
 
 if args['pooling'] == 'slstm':
     args['kernel_size'] = (4, 3)
