@@ -27,7 +27,7 @@ args['intention_module'] = False
 # Choose the pooling mechanism
 # 'slstm', 'cslstm', 'sgan'
 # -----------------------------
-args['pooling'] = 'cslstm'
+args['pooling'] = 'slstm'
 
 if args['pooling'] == 'slstm':
     args['kernel_size'] = (4, 3)
@@ -120,15 +120,15 @@ for ds_ctr, ds_name in enumerate(test_dataset_files):
         lossVals += l.detach()
         counts += c.detach()
 
-        print(tstSubset)
-        # Calculate RMSE in meters
-        print(torch.pow(lossVals / counts, 0.5) * 0.3048)
-        loss_total = torch.pow(lossVals / counts, 0.5)* 0.3048
-        fname = outf_bname + tstSubset + '_rmse_from_code.csv'
-        rmse_file = open(fname, 'ab')
-        np.savetxt(rmse_file, loss_total.cpu().numpy())
-        # Close the opened files
-        rmse_file.close()
+    print(tstSubset)
+    # Calculate RMSE in meters
+    print(torch.pow(lossVals / counts, 0.5) * 0.3048)
+    loss_total = torch.pow(lossVals / counts, 0.5)* 0.3048
+    fname = outf_bname + tstSubset + '_rmse_from_code.csv'
+    rmse_file = open(fname, 'ab')
+    np.savetxt(rmse_file, loss_total.cpu().numpy())
+    # Close the opened files
+    rmse_file.close()
 
 
 
