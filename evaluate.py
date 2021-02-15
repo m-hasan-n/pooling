@@ -125,8 +125,8 @@ for ds_ctr, ds_name in enumerate(test_dataset_files):
         print(torch.pow(lossVals / counts, 0.5) * 0.3048)
         loss_total = torch.pow(lossVals / counts, 0.5)* 0.3048
         fname = outf_bname + tstSubset + '_rmse_from_code.csv'
-        rmse_file = open(fname, 'w')
-        np.savetxt(rmse_file, loss_total.cpu())
+        rmse_file = open(fname, 'ab')
+        np.savetxt(rmse_file, loss_total.numpy())
         # Close the opened files
         rmse_file.close()
 
