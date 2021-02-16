@@ -22,7 +22,7 @@ args['num_lon_classes'] = 3
 args['train_flag'] = True
 
 # Using Intention module?
-args['intention_module'] = False
+args['intention_module'] = True
 
 # Choose the pooling mechanism
 # 'slstm', 'cslstm', 'sgan'
@@ -38,7 +38,7 @@ elif args['pooling'] == 'cslstm':
 
 elif args['pooling'] == 'sgan':
     args['bottleneck_dim'] = 256
-    args['sgan_batch_norm'] = False
+    args['sgan_batch_norm'] = True
 
 # Initialize network
 # ------------------
@@ -226,9 +226,9 @@ for epoch_num in range(pretrainEpochs+trainEpochs):
 
 model_fname = 'trained_models/'+args['pooling']
 if args['intention_module']:
-    model_fname = model_fname + '_mnvr.tar'
+    model_fname = model_fname + '_mnvr_bn.tar'
 else:
-    model_fname = model_fname + '.tar'
+    model_fname = model_fname + '_bn.tar'
 
 torch.save(net.state_dict(), model_fname)
 
