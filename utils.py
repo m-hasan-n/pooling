@@ -8,7 +8,7 @@ import torch
 
 ### Dataset class for the NGSIM dataset
 class ngsimDataset(Dataset):
-    def __init__(self, mat_file, t_h=30, t_f=50, d_s=2, enc_size = 64, grid_size = (13,3), n_lat = 3, n_lon = 3):
+    def __init__(self, mat_file, t_h=30, t_f=50, d_s=2, enc_size = 64, grid_size = (13,3), n_lat = 3, n_lon = 3, polar=True):
         self.D = scp.loadmat(mat_file)['traj']
         self.T = scp.loadmat(mat_file)['tracks']
         self.lat_int = scp.loadmat(mat_file)['lat_intention_masks']
@@ -20,6 +20,7 @@ class ngsimDataset(Dataset):
         self.grid_size = grid_size # size of social context grid
         self.n_lat = n_lat
         self.n_lon = n_lon
+        self.polar=polar
 
     def __len__(self):
         return len(self.D)
@@ -34,8 +35,8 @@ class ngsimDataset(Dataset):
         neighbors = []
 
         # Get track history 'hist' = ndarray, and future track 'fut' = ndarray
-        hist = self.getHistory(vehId,t,vehId,dsId)
-        fut = self.getFuture(vehId,t,dsId)
+        hist = self.getHistory(vehId,t,vehId,dsId, self.polar)
+        fut = self.getFuture(vehId,t,dsId, self.polar)
 
         # Get track histories of all neighbours 'neighbors' = [ndarray,[],ndarray,ndarray]
         for i in grid:
@@ -53,7 +54,7 @@ class ngsimDataset(Dataset):
         return hist, fut, neighbors, lat_enc, lon_enc, dsId, vehId, t
 
     ## Helper function to get track history
-    def getHistory(self, vehId, t, refVehId, dsId):
+    def getHistory(self, vehId, t, refVehId, dsId, polar):
         if vehId == 0:
             return np.empty([0, 2])
         else:
@@ -70,18 +71,36 @@ class ngsimDataset(Dataset):
                 enpt = np.argwhere(vehTrack[:, 0] == t).item() + 1
                 hist = vehTrack[stpt:enpt:self.d_s, 1:3] - refPos
 
+                if polar:
+                    hist=self.cart2polar(hist)
+
             if len(hist) < self.t_h // self.d_s + 1:
                 return np.empty([0, 2])
             return hist
 
     ## Helper function to get track future
-    def getFuture(self, vehId, t, dsId):
+    def getFuture(self, vehId, t, dsId, polar):
         vehTrack = self.T[dsId - 1][vehId - 1].transpose()
         refPos = vehTrack[np.where(vehTrack[:, 0] == t)][0, 1:3]
         stpt = np.argwhere(vehTrack[:, 0] == t).item() + self.d_s
         enpt = np.minimum(len(vehTrack), np.argwhere(vehTrack[:, 0] == t).item() + self.t_f + 1)
         fut = vehTrack[stpt:enpt:self.d_s, 1:3] - refPos
+
+        if polar:
+            fut = self.cart2polar(fut)
+
         return fut
+
+    def cart2polar(self, cart_traj):
+        r_traj = np.sqrt(np.square(cart_traj[:, 0]) + np.square(cart_traj[:, 1]))
+        th_traj = np.arctan2(cart_traj[:, 1], cart_traj[:, 0])
+        polar_traj = np.zeros(cart_traj.shape)
+        polar_traj[:, 0] = r_traj
+        polar_traj[:, 1] = th_traj
+        return  polar_traj
+
+
+
 
     ## Collate function for dataloader
     def collate_fn(self, samples):

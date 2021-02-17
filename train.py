@@ -25,9 +25,9 @@ args['train_flag'] = True
 args['intention_module'] = False
 
 # Choose the pooling mechanism
-# 'slstm', 'cslstm', 'sgan'
+# 'slstm', 'cslstm', 'sgan', 'polar'
 # -----------------------------
-args['pooling'] = 'sgan'
+args['pooling'] = 'polar'
 
 if args['pooling'] == 'slstm':
     args['kernel_size'] = (4, 3)
@@ -36,9 +36,11 @@ elif args['pooling'] == 'cslstm':
     args['soc_conv_depth'] = 64
     args['conv_3x1_depth'] = 16
 
-elif args['pooling'] == 'sgan':
+elif args['pooling'] == 'sgan' or args['pooling'] == 'polar':
     args['bottleneck_dim'] = 256
-    args['sgan_batch_norm'] = True
+    args['sgan_batch_norm'] = False
+
+
 
 # Initialize network
 # ------------------
@@ -57,7 +59,7 @@ crossEnt = torch.nn.BCELoss()
 ## Initialize data loaders
 valSet = ngsimDataset('data/ValSet_mnvr_new_corrected.mat')
 # trSet = ngsimDataset('data/ValSet_mnvr_new_corrected.mat')
-trSet = ngsimDataset('data/TrainSet_mnvr_new_corrected_1.mat')#, 'data/TrainSet_mnvr_new_corrected_2.mat'
+trSet = ngsimDataset('data/TrainSet_mnvr_new_corrected_1.mat')
 
 
 trDataloader = DataLoader(trSet,batch_size=batch_size,shuffle=True,num_workers=8,collate_fn=trSet.collate_fn)
@@ -226,9 +228,9 @@ for epoch_num in range(pretrainEpochs+trainEpochs):
 
 model_fname = 'trained_models/'+args['pooling']
 if args['intention_module']:
-    model_fname = model_fname + '_mnvr_bn.tar'
+    model_fname = model_fname + '_mnvr.tar'
 else:
-    model_fname = model_fname + '_bn.tar'
+    model_fname = model_fname + '.tar'
 
 torch.save(net.state_dict(), model_fname)
 

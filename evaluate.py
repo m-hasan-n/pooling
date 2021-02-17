@@ -48,9 +48,9 @@ net = highwayNet(args)
 # load the trained model
 net_fname = 'trained_models/' + args['pooling']
 if args['intention_module']:
-    net_fname = net_fname + '_mnvr_bn.tar'
+    net_fname = net_fname + '_mnvr.tar'
 else:
-    net_fname = net_fname + '_bn.tar'
+    net_fname = net_fname + '.tar'
 
 if (args['use_cuda']):
     net.load_state_dict(torch.load(net_fname), strict=False)
@@ -64,9 +64,9 @@ ds_name = 'i80'
 test_dataset_files = ['TestSet_mnvr_new_corrected', 'TestSet_mnvr_new_corrected_' + ds_name + '_arb_left', 'TestSet_mnvr_new_corrected_' + ds_name + '_keeping',
                        'TestSet_mnvr_new_corrected_' + ds_name + '_merging', 'TestSet_mnvr_new_corrected_' + ds_name + '_right']
 
-outf_bname = 'outfiles/' + args['pooling'] + '_bn/'
+outf_bname = 'outfiles/' + args['pooling'] + '/'
 if args['intention_module']:
-    outf_bname = 'outfiles/' + args['pooling'] + '_mnvr_bn/'
+    outf_bname = 'outfiles/' + args['pooling'] + '_mnvr/'
 
 
 for ds_ctr, ds_name in enumerate(test_dataset_files):

@@ -68,13 +68,14 @@ class highwayNet(nn.Module):
             self.conv_3x1 = torch.nn.Conv2d(self.soc_conv_depth, self.conv_3x1_depth, (3, 1))
             self.soc_maxpool = torch.nn.MaxPool2d((2, 1), padding=(1, 0))
 
-        elif self.pooling == 'sgan':
+        elif self.pooling == 'sgan' or self.pooling == 'polar':
             self.bottleneck_dim = args['bottleneck_dim']
             self.mlp_pre_dim = 2 * self.encoder_size
             self.soc_embedding_size = self.bottleneck_dim
             self.rel_pos_embedding = nn.Linear(2, self.encoder_size)
             self.batch_norm = args['sgan_batch_norm']
             self.mlp_pre_pool = make_mlp_reduced(self.mlp_pre_dim, self.bottleneck_dim, self.batch_norm)
+
 
         self.IA_module = args['intention_module']
         if self.IA_module:
