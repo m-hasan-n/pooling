@@ -9,7 +9,7 @@ def nbrs_pooling(net, soc_enc, masks, nbrs, nbrs_enc):
         soc_enc = s_pooling(net, soc_enc)
     elif net.pooling == 'cslstm':
         soc_enc = cs_pooling(net, soc_enc)
-    elif net.pooling == 'sgan' or net.pooling == 'pooling':
+    elif net.pooling == 'sgan' or net.pooling == 'polar':
         soc_enc = sg_pooling(net, masks, nbrs, nbrs_enc)
 
     return soc_enc
