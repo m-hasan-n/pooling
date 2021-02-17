@@ -40,7 +40,7 @@ class ngsimDataset(Dataset):
 
         # Get track histories of all neighbours 'neighbors' = [ndarray,[],ndarray,ndarray]
         for i in grid:
-            neighbors.append(self.getHistory(i.astype(int), t, vehId, dsId))
+            neighbors.append(self.getHistory(i.astype(int), t, vehId, dsId, self.polar))
 
         # Maneuvers 'lon_enc' = one-hot vector, 'lat_enc = one-hot vector
         lon_enc = np.zeros([self.n_lon])
