@@ -36,7 +36,7 @@ elif args['pooling'] == 'cslstm':
     args['soc_conv_depth'] = 64
     args['conv_3x1_depth'] = 16
 
-elif args['pooling'] == 'sgan':
+elif args['pooling'] == 'sgan' or args['pooling'] == 'polar':
     args['bottleneck_dim'] = 256
     args['sgan_batch_norm'] = False
 
