@@ -25,9 +25,9 @@ args['train_flag'] = False
 args['intention_module'] = False
 
 # Choose the pooling mechanism
-# 'slstm', 'cslstm', 'sgan'
+# 'slstm', 'cslstm', 'sgan', 'polar'
 # -----------------------------
-args['pooling'] = 'sgan'
+args['pooling'] = 'polar'
 
 if args['pooling'] == 'slstm':
     args['kernel_size'] = (4, 3)
