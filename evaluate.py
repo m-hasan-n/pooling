@@ -22,7 +22,7 @@ args['num_lon_classes'] = 3
 args['train_flag'] = False
 
 # Using Intention module?
-args['intention_module'] = False
+args['intention_module'] = True
 
 # Choose the pooling mechanism
 # 'slstm', 'cslstm', 'sgan', 'polar'
