@@ -5,6 +5,8 @@ from utils import ngsimDataset,maskedNLL,maskedMSE,maskedNLLTest
 from torch.utils.data import DataLoader
 import time
 import math
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
 
 # Network Arguments
 #-------------------
