@@ -21,13 +21,18 @@ args['num_lat_classes'] = 3
 args['num_lon_classes'] = 3
 args['train_flag'] = True
 
+# Dimensionality of the input:
+# 2D (X and Y or R and Theta)
+# 3D (adding velocity as a 3d dimension)
+args['input_dim'] = 3
+
 # Using Intention module?
 args['intention_module'] = True
 
 # Choose the pooling mechanism
 # 'slstm', 'cslstm', 'sgan', 'polar'
 # -----------------------------
-args['pooling'] = 'polar'
+args['pooling'] = 'slstm'
 
 if args['pooling'] == 'slstm':
     args['kernel_size'] = (4, 3)
@@ -58,8 +63,8 @@ crossEnt = torch.nn.BCELoss()
 
 ## Initialize data loaders
 valSet = ngsimDataset('data/ValSet_mnvr_new_corrected.mat')
-# trSet = ngsimDataset('data/ValSet_mnvr_new_corrected.mat')
-trSet = ngsimDataset('data/TrainSet_mnvr_new_corrected_1.mat')
+trSet = ngsimDataset('data/ValSet_mnvr_new_corrected.mat')
+# trSet = ngsimDataset('data/TrainSet_mnvr_new_corrected_1.mat')
 
 
 trDataloader = DataLoader(trSet,batch_size=batch_size,shuffle=True,num_workers=8,collate_fn=trSet.collate_fn)
@@ -228,7 +233,12 @@ for epoch_num in range(pretrainEpochs+trainEpochs):
 
 model_fname = 'trained_models/'+args['pooling']
 if args['intention_module']:
-    model_fname = model_fname + '_mnvr.tar'
+
+    if args['input_dim']==3:
+        model_fname = model_fname + 'Vel_mnvr.tar'
+    else:
+        model_fname = model_fname + '_mnvr.tar'
+
 else:
     model_fname = model_fname + '.tar'
 

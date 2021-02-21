@@ -27,6 +27,8 @@ class highwayNet(nn.Module):
         # Flag for train mode (True) vs test-mode (False)
         self.train_flag = args['train_flag']
 
+        ## Input Dimensionality
+        self.input_dim = args['input_dim']
         ## Sizes of network layers
         self.encoder_size = args['encoder_size']
         self.decoder_size = args['decoder_size']
@@ -72,7 +74,7 @@ class highwayNet(nn.Module):
             self.bottleneck_dim = args['bottleneck_dim']
             self.mlp_pre_dim = 2 * self.encoder_size
             self.soc_embedding_size = self.bottleneck_dim
-            self.rel_pos_embedding = nn.Linear(2, self.encoder_size)
+            self.rel_pos_embedding = nn.Linear(self.input_dim, self.encoder_size)
             self.batch_norm = args['sgan_batch_norm']
             self.mlp_pre_pool = make_mlp_reduced(self.mlp_pre_dim, self.bottleneck_dim, self.batch_norm)
 
@@ -88,7 +90,7 @@ class highwayNet(nn.Module):
 
         ## Define network weights
         # Input embedding layer
-        self.ip_emb = torch.nn.Linear(2, self.input_embedding_size)
+        self.ip_emb = torch.nn.Linear(self.input_dim, self.input_embedding_size)
 
         # Encoder LSTM
         self.enc_lstm = torch.nn.LSTM(self.input_embedding_size, self.encoder_size, 1)
@@ -97,7 +99,11 @@ class highwayNet(nn.Module):
         self.dyn_emb = torch.nn.Linear(self.encoder_size, self.dyn_embedding_size)
 
         # Output layers:
-        self.op = torch.nn.Linear(self.decoder_size, 5)
+        if self.input_dim == 2:
+            op_gauss_dim = 5
+        elif self.input_dim == 3:
+            op_gauss_dim = 7
+        self.op = torch.nn.Linear(self.decoder_size, op_gauss_dim)
         self.op_lat = torch.nn.Linear(self.soc_embedding_size + self.dyn_embedding_size, self.num_lat_classes)
         self.op_lon = torch.nn.Linear(self.soc_embedding_size + self.dyn_embedding_size, self.num_lon_classes)
 
