@@ -21,6 +21,11 @@ args['num_lat_classes'] = 3
 args['num_lon_classes'] = 3
 args['train_flag'] = False
 
+# Dimensionality of the input:
+# 2D (X and Y or R and Theta)
+# 3D (adding velocity as a 3d dimension)
+args['input_dim'] = 3
+
 # Using Intention module?
 args['intention_module'] = True
 
@@ -48,7 +53,10 @@ net = highwayNet(args)
 # load the trained model
 net_fname = 'trained_models/' + args['pooling']
 if args['intention_module']:
-    net_fname = net_fname + '_mnvr.tar'
+    if args['input_dim']==3:
+        model_fname = net_fname + 'Vel_mnvr.tar'
+    else:
+        model_fname = net_fname + '_mnvr.tar'
 else:
     net_fname = net_fname + '.tar'
 
@@ -66,7 +74,10 @@ test_dataset_files = ['TestSet_mnvr_new_corrected', 'TestSet_mnvr_new_corrected_
 
 outf_bname = 'outfiles/' + args['pooling'] + '/'
 if args['intention_module']:
-    outf_bname = 'outfiles/' + args['pooling'] + '_mnvr/'
+    if args['input_dim']==3:
+        utf_bname = 'outfiles/' + args['pooling'] + '_mnvr_V/'
+    else:
+        outf_bname = 'outfiles/' + args['pooling'] + '_mnvr/'
 
 
 for ds_ctr, ds_name in enumerate(test_dataset_files):
