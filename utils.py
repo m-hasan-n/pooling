@@ -97,7 +97,7 @@ class ngsimDataset(Dataset):
     def cart2polar(self, cart_traj):
         r_traj = np.sqrt(np.square(cart_traj[:, 0]) + np.square(cart_traj[:, 1]))
         th_traj = np.arctan2(cart_traj[:, 1], cart_traj[:, 0])
-        polar_traj = np.zeros(cart_traj.shape)
+        polar_traj = cart_traj
         polar_traj[:, 0] = r_traj
         polar_traj[:, 1] = th_traj
         return  polar_traj
