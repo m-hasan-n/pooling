@@ -54,9 +54,9 @@ net = highwayNet(args)
 net_fname = 'trained_models/' + args['pooling']
 if args['intention_module']:
     if args['input_dim']==3:
-        model_fname = net_fname + 'Vel_mnvr.tar'
+        net_fname = net_fname + '_Vel_mnvr.tar'
     else:
-        model_fname = net_fname + '_mnvr.tar'
+        net_fname = net_fname + '_mnvr.tar'
 else:
     net_fname = net_fname + '.tar'
 
