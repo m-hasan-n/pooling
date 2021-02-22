@@ -24,10 +24,10 @@ args['train_flag'] = False
 # Dimensionality of the input:
 # 2D (X and Y or R and Theta)
 # 3D (adding velocity as a 3d dimension)
-args['input_dim'] = 3
+args['input_dim'] = 2
 
 # Using Intention module?
-args['intention_module'] = True
+args['intention_module'] = False
 
 # Choose the pooling mechanism
 # 'slstm', 'cslstm', 'sgan', 'polar'
@@ -75,7 +75,7 @@ test_dataset_files = ['TestSet_mnvr_new_corrected', 'TestSet_mnvr_new_corrected_
 outf_bname = 'outfiles/' + args['pooling'] + '/'
 if args['intention_module']:
     if args['input_dim']==3:
-        utf_bname = 'outfiles/' + args['pooling'] + '_mnvr_V/'
+        outf_bname = 'outfiles/' + args['pooling'] + '_mnvr_V/'
     else:
         outf_bname = 'outfiles/' + args['pooling'] + '_mnvr/'
 
