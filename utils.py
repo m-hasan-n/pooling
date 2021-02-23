@@ -3,12 +3,14 @@ from torch.utils.data import Dataset, DataLoader
 import scipy.io as scp
 import numpy as np
 import torch
-
+from exp_args import args
 #___________________________________________________________________________________________________________________________
 
 ### Dataset class for the NGSIM dataset
 class ngsimDataset(Dataset):
-    def __init__(self, mat_file, t_h=30, t_f=50, d_s=2, enc_size = 64, grid_size = (13,3), n_lat = 3, n_lon = 3, input_dim=3, polar=False):
+    def __init__(self, mat_file, t_h=args['t_hist'], t_f=args['t_fut'], d_s=args['skip_factor'],
+                 enc_size=args['encoder_size'], grid_size=args['grid_size'], n_lat=args['num_lat_classes'],
+                 n_lon=args['num_lon_classes'], input_dim=args['input_dim'], polar=args['pooling'] == 'polar'):
         self.D = scp.loadmat(mat_file)['traj']
         self.T = scp.loadmat(mat_file)['tracks']
         self.lat_int = scp.loadmat(mat_file)['lat_intention_masks']
@@ -97,9 +99,12 @@ class ngsimDataset(Dataset):
     def cart2polar(self, cart_traj):
         r_traj = np.sqrt(np.square(cart_traj[:, 0]) + np.square(cart_traj[:, 1]))
         th_traj = np.arctan2(cart_traj[:, 1], cart_traj[:, 0])
-        polar_traj = cart_traj
+        polar_traj = np.zeros_like(cart_traj)
         polar_traj[:, 0] = r_traj
         polar_traj[:, 1] = th_traj
+        polar_traj[:, 2] = cart_traj[:, 2]/r_traj
+        nan_inf_indx = np.logical_or(np.isnan(polar_traj[:, 2]), np.isinf(polar_traj[:, 2]))
+        polar_traj[nan_inf_indx, 2] = 0
         return  polar_traj
 
 

@@ -1,7 +1,7 @@
 # Network Arguments
 #-------------------
 args = {}
-args['use_cuda'] = False
+args['use_cuda'] = True
 args['encoder_size'] = 64
 args['decoder_size'] = 128
 args['in_length'] = 16
@@ -25,3 +25,8 @@ args['intention_module'] = True
 # 'slstm', 'cslstm', 'sgan', 'polar'
 # -----------------------------
 args['pooling'] = 'polar'
+
+#ngsimDataset Class in utils.py
+args['t_hist'] = 30 #t_h
+args['t_fut'] = 50 #t_f
+args['skip_factor'] = 2 #d_s
