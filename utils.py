@@ -103,9 +103,10 @@ class ngsimDataset(Dataset):
         polar_traj = np.zeros_like(cart_traj)
         polar_traj[:, 0] = r_traj
         polar_traj[:, 1] = th_traj
-        polar_traj[:, 2] = cart_traj[:, 2]/r_traj
-        nan_inf_indx = np.logical_or(np.isnan(polar_traj[:, 2]), np.isinf(polar_traj[:, 2]))
-        polar_traj[nan_inf_indx, 2] = 0
+        polar_traj[:, 2] = cart_traj[:, 2]
+        # polar_traj[:, 2] = cart_traj[:, 2]/r_traj
+        # nan_inf_indx = np.logical_or(np.isnan(polar_traj[:, 2]), np.isinf(polar_traj[:, 2]))
+        # polar_traj[nan_inf_indx, 2] = 0
         return  polar_traj
 
 
