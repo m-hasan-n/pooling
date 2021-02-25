@@ -103,11 +103,25 @@ class ngsimDataset(Dataset):
         polar_traj = np.zeros_like(cart_traj)
         polar_traj[:, 0] = r_traj
         polar_traj[:, 1] = th_traj
+        traj_orient = self.traj_orientation(cart_traj)
         # polar_traj[:, 2] = cart_traj[:, 2] #linear velocity
-        polar_traj[:, 2] = cart_traj[:, 2]/r_traj #angular velocity
+        polar_traj[:, 2] = cart_traj[:, 2]*np.sin(traj_orient)/r_traj #angular velocity
         nan_inf_indx = np.logical_or(np.isnan(polar_traj[:, 2]), np.isinf(polar_traj[:, 2]))
         polar_traj[nan_inf_indx, 2] = 0
         return  polar_traj
+
+    def traj_orientation(self, car_traj):
+        trj_len = car_traj.shape[0]
+        mid_pnt = int(trj_len/2)
+        mid_traj =  car_traj[mid_pnt,:]-car_traj[0,:]
+        mid_orient = np.arctan2(mid_traj[1], mid_traj[0])
+        end_traj = car_traj[-1,:]-car_traj[mid_pnt,:]
+        end_orient = np.arctan2(end_traj[1], end_traj[0])
+        trj_orient = np.zeros_like(car_traj[:,0])
+        trj_orient[0:mid_pnt] = mid_orient
+        trj_orient[mid_pnt:trj_len] = end_orient
+        return trj_orient
+
 
 
 
