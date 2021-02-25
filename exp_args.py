@@ -24,7 +24,7 @@ args['intention_module'] = True
 # Choose the pooling mechanism
 # 'slstm', 'cslstm', 'sgan', 'polar'
 # -----------------------------
-args['pooling'] = 'polar'
+args['pooling'] = 'cslstm'
 
 #ngsimDataset Class in utils.py
 args['t_hist'] = 30 #t_h
