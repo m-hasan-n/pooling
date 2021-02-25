@@ -105,8 +105,8 @@ class ngsimDataset(Dataset):
         polar_traj[:, 1] = th_traj
         # polar_traj[:, 2] = cart_traj[:, 2] #linear velocity
         polar_traj[:, 2] = r_traj/cart_traj[:, 2] #angular velocity
-        nan_inf_indx = np.logical_or(np.isnan(polar_traj[:, 2]), np.isinf(polar_traj[:, 2]))
-        polar_traj[nan_inf_indx, 2] = 0
+        # nan_inf_indx = np.logical_or(np.isnan(polar_traj[:, 2]), np.isinf(polar_traj[:, 2]))
+        # polar_traj[nan_inf_indx, 2] = 0
         return  polar_traj
 
 
