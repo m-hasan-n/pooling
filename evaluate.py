@@ -64,7 +64,11 @@ if args['intention_module']:
     else:
         net_fname = net_fname + '_mnvr.tar'
 else:
-    net_fname = net_fname + '.tar'
+    if args['input_dim'] == 3:
+        net_fname = net_fname + '_Vel.tar'
+    else:
+        net_fname = net_fname + '.tar'
+
 
 if (args['use_cuda']):
     net.load_state_dict(torch.load(net_fname), strict=False)

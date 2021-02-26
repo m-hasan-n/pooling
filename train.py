@@ -248,7 +248,10 @@ if args['intention_module']:
         model_fname = model_fname + '_mnvr.tar'
 
 else:
-    model_fname = model_fname + '.tar'
+    if args['input_dim'] == 3:
+        model_fname = model_fname + '_Vel.tar'
+    else:
+        model_fname = model_fname + '.tar'
 
 torch.save(net.state_dict(), model_fname)
 
