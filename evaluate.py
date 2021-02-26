@@ -57,14 +57,15 @@ elif args['pooling'] == 'sgan' or args['pooling'] == 'polar':
 net = highwayNet(args)
 
 # load the trained model
-net_fname = 'trained_models/' + args['pooling']
-if args['intention_module']:
-    if args['input_dim']==3:
-        net_fname = net_fname + 'Vel_mnvr.tar'
-    else:
-        net_fname = net_fname + '_mnvr.tar'
-else:
-    net_fname = net_fname + '.tar'
+net_fname = 'trained_models/polarVel_mnvr_sinTH.tar'
+# net_fname = 'trained_models/' + args['pooling']
+# if args['intention_module']:
+#     if args['input_dim']==3:
+#         net_fname = net_fname + 'Vel_mnvr.tar'
+#     else:
+#         net_fname = net_fname + '_mnvr.tar'
+# else:
+#     net_fname = net_fname + '.tar'
 
 if (args['use_cuda']):
     net.load_state_dict(torch.load(net_fname), strict=False)
