@@ -90,7 +90,7 @@ if args['intention_module']:
         outf_bname = 'outfiles/' + args['pooling'] + '_mnvr/'
 else:
     if args['input_dim'] == 3:
-        utf_bname = 'outfiles/' + args['pooling'] + '_Vel/'
+        outf_bname = 'outfiles/' + args['pooling'] + '_Vel/'
     else:
         outf_bname = 'outfiles/' + args['pooling'] + '/'
 
