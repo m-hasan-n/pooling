@@ -209,7 +209,7 @@ def outputActivation(x):
         sigX = torch.exp(sigX)
         sigY = torch.exp(sigY)
         sigTh = torch.exp(sigTh)
-        rho = torch.tanh(rho) #  0.4 * 0.4 sclaing to avoid NaN when computing the loss
+        rho = 0.8*torch.tanh(rho) #  0.4 * 0.4 sclaing to avoid NaN when computing the loss
         out = torch.cat([muX, muY, muTh, sigX, sigY, sigTh, rho], dim=2)
 
     return out
