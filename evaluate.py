@@ -82,13 +82,17 @@ ds_name = 'i80'
 test_dataset_files = ['TestSet_mnvr_new_corrected', 'TestSet_mnvr_new_corrected_' + ds_name + '_arb_left', 'TestSet_mnvr_new_corrected_' + ds_name + '_keeping',
                        'TestSet_mnvr_new_corrected_' + ds_name + '_merging', 'TestSet_mnvr_new_corrected_' + ds_name + '_right']
 
-outf_bname = 'outfiles/' + args['pooling'] + '/'
+
 if args['intention_module']:
     if args['input_dim']==3:
         outf_bname = 'outfiles/' + args['pooling'] + '_mnvr_V/'
     else:
         outf_bname = 'outfiles/' + args['pooling'] + '_mnvr/'
-
+else:
+    if args['input_dim'] == 3:
+        utf_bname = 'outfiles/' + args['pooling'] + '_Vel/'
+    else:
+        outf_bname = 'outfiles/' + args['pooling'] + '/'
 
 for ds_ctr, ds_name in enumerate(test_dataset_files):
 
