@@ -38,12 +38,12 @@ class ngsimDataset(Dataset):
         neighbors = []
 
         # Get track history 'hist' = ndarray, and future track 'fut' = ndarray
-        hist = self.getHistory(vehId,t,vehId,dsId)
-        fut = self.getFuture(vehId,t,dsId)
+        hist = self.getHistory(vehId,t,vehId,dsId, nbr_flag=False)
+        fut = self.getFuture(vehId,t,dsId, nbr_flag=False)
 
         # Get track histories of all neighbours 'neighbors' = [ndarray,[],ndarray,ndarray]
         for i in grid:
-            neighbors.append(self.getHistory(i.astype(int), t, vehId, dsId))
+            neighbors.append(self.getHistory(i.astype(int), t, vehId, dsId, nbr_flag=True))
 
         # Maneuvers 'lon_enc' = one-hot vector, 'lat_enc = one-hot vector
         lon_enc = np.zeros([self.n_lon])
@@ -57,7 +57,7 @@ class ngsimDataset(Dataset):
         return hist, fut, neighbors, lat_enc, lon_enc, dsId, vehId, t
 
     ## Helper function to get track history
-    def getHistory(self, vehId, t, refVehId, dsId):
+    def getHistory(self, vehId, t, refVehId, dsId, nbr_flag):
         if vehId == 0:
             return np.empty([0, 2])
         else:
@@ -76,14 +76,14 @@ class ngsimDataset(Dataset):
                 hist = vehTrack[stpt:enpt:self.d_s, 1:inp_size] - refPos
                 polar = self.polar
                 if polar:
-                    hist=self.cart2polar(hist)
+                    hist=self.cart2polar(hist,nbr_flag)
 
             if len(hist) < self.t_h // self.d_s + 1:
                 return np.empty([0, 2])
             return hist
 
     ## Helper function to get track future
-    def getFuture(self, vehId, t, dsId):
+    def getFuture(self, vehId, t, dsId, nbr_flag):
         inp_size = self.input_dim + 1
         vehTrack = self.T[dsId - 1][vehId - 1].transpose()
         refPos = vehTrack[np.where(vehTrack[:, 0] == t)][0, 1:inp_size]
@@ -92,23 +92,28 @@ class ngsimDataset(Dataset):
         fut = vehTrack[stpt:enpt:self.d_s, 1:inp_size] - refPos
         polar = self.polar
         if polar:
-            fut = self.cart2polar(fut)
+            fut = self.cart2polar(fut, nbr_flag)
 
         return fut
 
-    def cart2polar(self, cart_traj):
-        np.seterr(divide='ignore', invalid='ignore')
+    def cart2polar(self, cart_traj, nbr_flag):
+
         r_traj = np.sqrt(np.square(cart_traj[:, 0]) + np.square(cart_traj[:, 1]))
         th_traj = np.arctan2(cart_traj[:, 1], cart_traj[:, 0])
         polar_traj = np.zeros_like(cart_traj)
         polar_traj[:, 0] = r_traj
         polar_traj[:, 1] = th_traj
-        traj_orient = self.traj_orientation(cart_traj)
-        theta_total = traj_orient + th_traj
-        # polar_traj[:, 2] = cart_traj[:, 2] #linear velocity
-        polar_traj[:, 2] = cart_traj[:, 2]*np.sin(theta_total)/r_traj #angular velocity
-        nan_inf_indx = np.logical_or(np.isnan(polar_traj[:, 2]), np.isinf(polar_traj[:, 2]))
-        polar_traj[nan_inf_indx, 2] = 0
+
+        if nbr_flag:
+            np.seterr(divide='ignore', invalid='ignore')
+            traj_orient = self.traj_orientation(cart_traj)
+            theta_total = traj_orient + th_traj
+            polar_traj[:, 2] = cart_traj[:, 2]*np.sin(theta_total)/r_traj #angular velocity
+            nan_inf_indx = np.logical_or(np.isnan(polar_traj[:, 2]), np.isinf(polar_traj[:, 2]))
+            polar_traj[nan_inf_indx, 2] = 0
+        else:
+            polar_traj[:, 2] = cart_traj[:, 2]  # linear velocity
+
         return  polar_traj
 
     def traj_orientation(self, car_traj):

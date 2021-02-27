@@ -19,7 +19,7 @@ args['train_flag'] = True
 args['input_dim'] = 3
 
 # Using Intention module?
-args['intention_module'] = False
+args['intention_module'] = True
 
 # Choose the pooling mechanism
 # 'slstm', 'cslstm', 'sgan', 'polar'
