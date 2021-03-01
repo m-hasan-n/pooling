@@ -116,11 +116,12 @@ class ngsimDataset(Dataset):
         theta_total = traj_orient + phi_traj
 
         #Check if theta is nearly 180 degrees
-        theta_indx = abs(theta_total-np.pi) < 0.001
+        lin_indx = abs(theta_total - np.pi) < 0.001
+        ang_indx = np.logical_not(lin_indx)
         #True? use linear velocity
-        polar_traj[theta_indx, 2] = car_traj[theta_indx, 2]  # linear velocity
+        polar_traj[lin_indx, 2] = car_traj[lin_indx, 2]  # linear velocity
         #False? use angular velocity
-        polar_traj[not(theta_indx), 2] = car_traj[not(theta_indx), 2] * np.sin(theta_total[not(theta_indx)]) / r_traj[not(theta_indx)]  # angular velocity
+        polar_traj[ang_indx, 2] = car_traj[ang_indx, 2] * np.sin(theta_total[ang_indx]) / r_traj[ang_indx]  # angular velocity
         nan_inf_indx = np.logical_or(np.isnan(polar_traj[:, 2]), np.isinf(polar_traj[:, 2]))
         polar_traj[nan_inf_indx, 2] = 0
 
