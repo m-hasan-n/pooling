@@ -97,6 +97,7 @@ class ngsimDataset(Dataset):
         return fut
 
     def cart2polar(self, car_traj):
+        np.seterr(divide='ignore', invalid='ignore')
 
         #trajectory segment in polar coordinates
         #Distance: r
@@ -113,13 +114,23 @@ class ngsimDataset(Dataset):
         car_traj_rel = car_traj - car_traj[0, :]
         traj_orient = np.arctan2(car_traj_rel[:, 1], car_traj_rel[:, 0])
         theta_total = traj_orient + phi_traj
-        if abs(theta_total-np.pi) < 0.001:
-            polar_traj[:, 2] = car_traj[:, 2]  # linear velocity
-        else:
-            np.seterr(divide='ignore', invalid='ignore')
-            polar_traj[:, 2] = car_traj[:, 2] * np.sin(theta_total) / r_traj  # angular velocity
-            nan_inf_indx = np.logical_or(np.isnan(polar_traj[:, 2]), np.isinf(polar_traj[:, 2]))
-            polar_traj[nan_inf_indx, 2] = 0
+
+        #Check if theta is nearly 180 degrees
+        theta_indx = np.any(abs(theta_total-np.pi) < 0.001)
+        #True? use linear velocity
+        polar_traj[theta_indx, 2] = car_traj[:, 2]  # linear velocity
+        #False? use angular velocity
+        polar_traj[not(theta_indx), 2] = car_traj[:, 2] * np.sin(theta_total) / r_traj  # angular velocity
+        nan_inf_indx = np.logical_or(np.isnan(polar_traj[:, 2]), np.isinf(polar_traj[:, 2]))
+        polar_traj[nan_inf_indx, 2] = 0
+
+        # if abs(theta_total-np.pi) < 0.001:
+        #     polar_traj[:, 2] = car_traj[:, 2]  # linear velocity
+        # else:
+        #     np.seterr(divide='ignore', invalid='ignore')
+        #     polar_traj[:, 2] = car_traj[:, 2] * np.sin(theta_total) / r_traj  # angular velocity
+        #     nan_inf_indx = np.logical_or(np.isnan(polar_traj[:, 2]), np.isinf(polar_traj[:, 2]))
+        #     polar_traj[nan_inf_indx, 2] = 0
 
         # traj_orient = self.traj_orientation(car_traj)
         # theta_total = traj_orient + phi_traj
