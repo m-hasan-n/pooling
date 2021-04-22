@@ -8,39 +8,10 @@ import math
 import warnings
 
 #Import the argumnets
-from exp_args import args
+from model_args import args
 
 #Ignore the warnings
 warnings.filterwarnings("ignore", category=UserWarning)
-
-
-# # Network Arguments
-# #-------------------
-# args = {}
-# args['use_cuda'] = False
-# args['encoder_size'] = 64
-# args['decoder_size'] = 128
-# args['in_length'] = 16
-# args['out_length'] = 25
-# args['grid_size'] = (13,3)
-# args['dyn_embedding_size'] = 32
-# args['input_embedding_size'] = 32
-# args['num_lat_classes'] = 3
-# args['num_lon_classes'] = 3
-# args['train_flag'] = True
-#
-# # Dimensionality of the input:
-# # 2D (X and Y or R and Theta)
-# # 3D (adding velocity as a 3d dimension)
-# args['input_dim'] = 3
-#
-# # Using Intention module?
-# args['intention_module'] = True
-#
-# # Choose the pooling mechanism
-# # 'slstm', 'cslstm', 'sgan', 'polar'
-# # -----------------------------
-# args['pooling'] = 'polar'
 
 if args['pooling'] == 'slstm':
     args['kernel_size'] = (4, 3)
@@ -54,7 +25,6 @@ elif args['pooling'] == 'sgan' or args['pooling'] == 'polar':
     args['sgan_batch_norm'] = False
 
 
-
 # Initialize network
 # ------------------
 net = highwayNet(args)
@@ -63,8 +33,9 @@ if args['use_cuda']:
 
 ## Initialize optimizer
 # ---------------------
-pretrainEpochs = 5
-trainEpochs = 3
+pretrainEpochs = args['pretrainEpochs']
+trainEpochs = args['trainEpochs']
+
 optimizer = torch.optim.Adam(net.parameters())
 batch_size = 128
 crossEnt = torch.nn.BCELoss()
@@ -226,19 +197,23 @@ for epoch_num in range(pretrainEpochs+trainEpochs):
             else:
                 l = maskedNLL(fut_pred, fut, op_mask)
 
+
+
         avg_val_loss += l.item()
         val_batch_count += 1
 
     print(avg_val_loss / val_batch_count)
 
     # Print validation loss and update display variables
-    print('Validation loss :', format(avg_val_loss / val_batch_count, '0.4f'), "| Val Acc:",
-          format(avg_val_lat_acc / val_batch_count * 100, '0.4f'),
+    print('Validation loss :', format(avg_val_loss / val_batch_count, '0.4f'),
+          "| Val Acc:", format(avg_val_lat_acc / val_batch_count * 100, '0.4f'),
           format(avg_val_lon_acc / val_batch_count * 100, '0.4f'))
 
     val_loss.append(avg_val_loss / val_batch_count)
     prev_val_loss = avg_val_loss / val_batch_count
 
+# Model Saving
+#-------------
 model_fname = 'trained_models/'+args['pooling']
 if args['intention_module']:
 
