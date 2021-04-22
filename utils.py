@@ -3,7 +3,7 @@ from torch.utils.data import Dataset, DataLoader
 import scipy.io as scp
 import numpy as np
 import torch
-from exp_args import args
+from model_args import args
 #___________________________________________________________________________________________________________________________
 
 ### Dataset class for the NGSIM dataset
@@ -118,40 +118,8 @@ class ngsimDataset(Dataset):
             traj_orient = np.arctan2(car_traj_rel[:, 1], car_traj_rel[:, 0])
             polar_traj[:, 2] = car_traj[:, 2] * np.cos(traj_orient - phi_traj)
         else:
-            #This is Hist of Fut of the ego vehicle, then Vr = V
+            #This is Hist or Fut of the ego vehicle, then Vr = V
             polar_traj[:, 2] = car_traj[:, 2]  # linear velocity
-
-
-        # #Trajectory Orientation w.r.t the initial position
-        # car_traj_rel = car_traj - car_traj[0, :]
-        # traj_orient = np.arctan2(car_traj_rel[:, 1], car_traj_rel[:, 0])
-        # theta_total = traj_orient + phi_traj
-        #
-        # #Check if theta is nearly 180 degrees
-        # lin_indx = abs(theta_total - np.pi) < 0.01
-        # ang_indx = np.logical_not(lin_indx)
-        # #True? use linear velocity
-        # polar_traj[lin_indx, 2] = car_traj[lin_indx, 2]  # linear velocity
-        # #False? use angular velocity
-        # polar_traj[ang_indx, 2] = car_traj[ang_indx, 2] * np.cos(theta_total[ang_indx]) #/ r_traj[ang_indx]  # angular velocity
-        # # nan_inf_indx = np.logical_or(np.isnan(polar_traj[:, 2]), np.isinf(polar_traj[:, 2]))
-        # # polar_traj[nan_inf_indx, 2] = 0
-
-        # if abs(theta_total-np.pi) < 0.001:
-        #     polar_traj[:, 2] = car_traj[:, 2]  # linear velocity
-        # else:
-        #     np.seterr(divide='ignore', invalid='ignore')
-        #     polar_traj[:, 2] = car_traj[:, 2] * np.sin(theta_total) / r_traj  # angular velocity
-        #     nan_inf_indx = np.logical_or(np.isnan(polar_traj[:, 2]), np.isinf(polar_traj[:, 2]))
-        #     polar_traj[nan_inf_indx, 2] = 0
-
-        # traj_orient = self.traj_orientation(car_traj)
-        # theta_total = traj_orient + phi_traj
-        # polar_traj[:, 2] = car_traj[:, 2] * np.sin(theta_total) / r_traj #angular velocity
-        # nan_inf_indx = np.logical_or(np.isnan(polar_traj[:, 2]), np.isinf(polar_traj[:, 2]))
-        # polar_traj[nan_inf_indx, 2] = 0
-        #
-        # polar_traj[:, 2] = car_traj[:, 2]  # linear velocity
 
         return  polar_traj
 
@@ -245,7 +213,7 @@ def outputActivation(x):
         sigX = torch.exp(sigX)
         sigY = torch.exp(sigY)
         sigTh = torch.exp(sigTh)
-        rho = 0.6*torch.tanh(rho) #  0.4 * 0.4 sclaing to avoid NaN when computing the loss
+        rho = 0.6*torch.tanh(rho) # sclaing to avoid NaN when computing the loss
         out = torch.cat([muX, muY, muTh, sigX, sigY, sigTh, rho], dim=2)
 
     return out
@@ -293,12 +261,6 @@ def compute_nll_mat_red(y_pred, y_gt):
 
 
     nll_loss = loss_1 + 2.7568 + 0.5*torch.log(sigma_mat.det())
-
-    # if use_reg:
-    #     # rho_reg_term = 1 - 3 * torch.pow(rho, 2) + 2 * torch.pow(rho, 3)
-    #     rho_reg_term = 3 * torch.pow(rho, 2) - 2 * torch.pow(rho, 3)
-    #     # nll_loss = nll_loss + torch.pow(rho_reg_term.cpu(),2)
-    #     nll_loss = nll_loss + torch.abs(rho_reg_term.cpu())
 
     return nll_loss
 
