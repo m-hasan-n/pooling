@@ -28,5 +28,22 @@ the proposed and other pooling approaches such as Social LSTM , Covolutional Soc
 #
 ![pooling image](pooling_approaches.png "Pooling approaches")
 
+Visualizing pooling mechanisms (A green vehicle shows the ego, 
+yellow vehicle shows a neighbor covered by the pooling strategy,
+and grey vehicle shows a non-covered neighbor). 
+* Left: a spatial grid is centered around the ego vehicle. 
+The social tensor is structured accordingly and populated
+with LSTM states of the ego and exisiting neighbor vehicles. 
+  The social tensor is used with Social LSTM and Covolutional Social Pooling works.
+#  
+* Center: relative positions between the ego vehicle and 
+  all its neighbors are concatenated to vehicle LSTM states. This is 
+  the pooling strategy used in Social GAN work.
+#  
+* Right: the proposed pooling strategy where vehicle LSTM 
+  states are concatenated to relative polar positions 
+  (distance and angle) rather than the Cartesian representation
+  used by the previous works.
+  
 ## NGSIM Dataset Pre-processing
 
