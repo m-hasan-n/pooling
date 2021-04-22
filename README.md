@@ -22,5 +22,11 @@ NGSIM dataset.
 #
 ![model image](pooling_model.png "Model overview")
 
+## Pooling Toolbox
+This project helps to reproduce 
+the proposed and other pooling approaches such as Social LSTM , Covolutional Social Pooling and Soicla GAN.
+#
+![pooling image](pooling_approaches.png "Pooling approaches")
+
 ## NGSIM Dataset Pre-processing
 
