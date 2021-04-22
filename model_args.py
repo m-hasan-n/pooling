@@ -26,6 +26,18 @@ args['intention_module'] = True
 # -----------------------------
 args['pooling'] = 'polar'
 
+if args['pooling'] == 'slstm':
+    args['kernel_size'] = (4, 3)
+
+elif args['pooling'] == 'cslstm':
+    args['soc_conv_depth'] = 64
+    args['conv_3x1_depth'] = 16
+
+elif args['pooling'] == 'sgan' or args['pooling'] == 'polar':
+    args['bottleneck_dim'] = 256
+    args['sgan_batch_norm'] = False
+
+
 #ngsimDataset Class in utils.py
 args['t_hist'] = 30 #t_h
 args['t_fut'] = 50 #t_f
