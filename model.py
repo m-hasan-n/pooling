@@ -1,16 +1,9 @@
 from __future__ import division
 import torch
-from torch.autograd import Variable
 import torch.nn as nn
 from utils import outputActivation
 from pooling_module import nbrs_pooling
 
-def make_mlp_reduced(dim_in, dim_out, batch_norm):
-    if batch_norm:
-        layers = [nn.Linear(dim_in, dim_out), nn.BatchNorm1d(dim_out), nn.ReLU()]
-    else:
-        layers = [nn.Linear(dim_in, dim_out), nn.ReLU()]
-    return nn.Sequential(*layers)
 
 class highwayNet(nn.Module):
 
@@ -76,14 +69,14 @@ class highwayNet(nn.Module):
             self.soc_embedding_size = self.bottleneck_dim
             self.rel_pos_embedding = nn.Linear(self.input_dim, self.encoder_size)
             self.batch_norm = args['sgan_batch_norm']
-            self.mlp_pre_pool = make_mlp_reduced(self.mlp_pre_dim, self.bottleneck_dim, self.batch_norm)
+            self.mlp_pre_pool = self.make_mlp(self.mlp_pre_dim, self.bottleneck_dim, self.batch_norm)
 
 
         self.IA_module = args['intention_module']
         if self.IA_module:
             # Decoder LSTM
-            self.dec_lstm = torch.nn.LSTM(self.soc_embedding_size + self.dyn_embedding_size + self.num_lat_classes + self.num_lon_classes,
-                                          self.decoder_size)
+            self.dec_lstm = torch.nn.LSTM(self.soc_embedding_size + self.dyn_embedding_size +
+                                          self.num_lat_classes + self.num_lon_classes, self.decoder_size)
         else:
             self.dec_lstm = torch.nn.LSTM(self.soc_embedding_size + self.dyn_embedding_size, self.decoder_size)
 
@@ -164,7 +157,7 @@ class highwayNet(nn.Module):
             fut_pred = self.decode(enc)
             return fut_pred
 
-
+    # Decoder Module
     def decode(self, enc):
         enc = enc.repeat(self.out_length, 1, 1)
         h_dec, _ = self.dec_lstm(enc)
@@ -174,5 +167,10 @@ class highwayNet(nn.Module):
         fut_pred = outputActivation(fut_pred)
         return fut_pred
 
-
-
+    # MLP
+    def make_mlp(self, dim_in, dim_out, batch_norm):
+        if batch_norm:
+            layers = [nn.Linear(dim_in, dim_out), nn.BatchNorm1d(dim_out), nn.ReLU()]
+        else:
+            layers = [nn.Linear(dim_in, dim_out), nn.ReLU()]
+        return nn.Sequential(*layers)
