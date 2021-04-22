@@ -1,17 +1,15 @@
-
 from __future__ import division
 import torch
-from torch.autograd import Variable
 import torch.nn as nn
 
+# Main Poolig Function
 def nbrs_pooling(net, soc_enc, masks, nbrs, nbrs_enc):
     if net.pooling == 'slstm':
         soc_enc = s_pooling(net, soc_enc)
     elif net.pooling == 'cslstm':
         soc_enc = cs_pooling(net, soc_enc)
     elif net.pooling == 'sgan' or net.pooling == 'polar':
-        soc_enc = sg_pooling(net, masks, nbrs, nbrs_enc)
-
+        soc_enc = polar_pooling(net, masks, nbrs, nbrs_enc)
     return soc_enc
 
 #SLSTM
@@ -40,7 +38,8 @@ def cs_pooling(net, soc_enc):
     soc_enc = soc_enc.view(-1,net.soc_embedding_size)
     return soc_enc
 
-def sg_pooling(net, masks, nbrs, nbrs_enc):
+## Pooling operation used in the propoaed Polar-Pooling and SGAN
+def polar_pooling(net, masks, nbrs, nbrs_enc):
     sum_masks = masks.sum(dim=3)
 
     soc_enc = torch.zeros(masks.shape[0],net.bottleneck_dim).float()
