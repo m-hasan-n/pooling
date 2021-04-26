@@ -57,3 +57,29 @@ preprocess_ngsim.m
 
 This will preprocess the dataset, splits it into train, validation and test subsets, 
 and save that to the 'data' directory.
+
+## Model Arguments
+The default network arguments are in:
+```
+model_args.py 
+```
+You can also set the required experiment arguments in this script. For example: 
+
+* args['ip_dim'] selects the input dimensionality (2D or 3D).
+* args['intention_module'] selects whether to predict driver intention.
+* args['pooling'] sets the pooling strategy to either 'polar' (our proposed method), 
+  'slstm' (Social LSTM), 'cslstm' (Convolutional Social Pooling), or 'sgan' (Social GAN).
+  
+## Model Training and Evaluation
+The model structure is coded in 'model.py'. 
+After setting the required experiment arguments, 
+you can start model training by running:
+```
+train.py
+```
+The output model will be save in 'trained_models' directory.
+To test a trained model run:
+```
+evaluate.py
+```
+which will load and test the trained model defined by the selected model arguments. The RMSE results will be saved as csv files to the 'evaluation' directory. 
