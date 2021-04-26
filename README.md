@@ -72,6 +72,8 @@ You can also set the required experiment arguments in this script. For example:
   
 ## Model Training and Evaluation
 The model structure is coded in 'model.py'. 
+We extend the features of the basic model of an extension 
+of [CSP](https://github.com/nachiket92/conv-social-pooling).
 After setting the required experiment arguments, 
 you can start model training by running:
 ```
@@ -83,3 +85,16 @@ To test a trained model run:
 evaluate.py
 ```
 which will load and test the trained model defined by the selected model arguments. The RMSE results will be saved as csv files to the 'evaluation' directory. 
+
+## Citation
+If you find this code useful for your research, please cite [our work](https://arxiv.org/):
+
+* Mohamed Hasan, Albert Solernou, Evangelos Paschalidis, 
+  He Wang, Gustav Markkula and Richard Romano, 
+  "Maneuver-Aware Pooling for Vehicle Trajectory Prediction", under review IROS 2021.
+
+## License
+This project is licensed under the MIT License - see the 
+[LICENSE.md](LICENSE.md) file for details.
+
+
