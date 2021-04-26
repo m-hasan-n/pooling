@@ -46,4 +46,14 @@ with LSTM states of the ego and exisiting neighbor vehicles.
   used by the previous works.
   
 ## NGSIM Dataset Pre-processing
+The NGSIM  public  dataset  is  used  for  our  experiments. The
+dataset  consists  of  two  subsets:  [US-101](https://www.fhwa.dot.gov/publications/research/operations/07030/index.cfm)   
+and [I-80](https://www.fhwa.dot.gov/publications/research/operations/06137/). 
+Download the raw (.txt) files of both subsets, and then run the following MATLAB script:
 
+```
+preprocess_ngsim.m
+```
+
+This will preprocess the dataset, splits it into train, validation and test subsets, 
+and save that to the 'data' directory.
