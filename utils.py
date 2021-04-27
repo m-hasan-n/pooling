@@ -13,8 +13,8 @@ class ngsimDataset(Dataset):
                  n_lon=args['num_lon_classes'], input_dim=args['input_dim'], polar=args['pooling'] == 'polar'):
         self.D = scp.loadmat(mat_file)['traj']
         self.T = scp.loadmat(mat_file)['tracks']
-        self.lat_int = scp.loadmat(mat_file)['lat_intention_masks']
-        self.lon_int = scp.loadmat(mat_file)['lon_intention_masks']
+        # self.lat_int = scp.loadmat(mat_file)['lat_intention_masks']
+        # self.lon_int = scp.loadmat(mat_file)['lon_intention_masks']
         self.t_h = t_h  # length of track history
         self.t_f = t_f  # length of predicted trajectory
         self.d_s = d_s  # down sampling rate of all sequences
@@ -34,7 +34,7 @@ class ngsimDataset(Dataset):
         dsId = self.D[idx, 0].astype(int)
         vehId = self.D[idx, 1].astype(int)
         t = self.D[idx, 2]
-        grid = self.D[idx,8:]
+        grid = self.D[idx, 10:]
         neighbors = []
 
         # Get track history 'hist' = ndarray, and future track 'fut' = ndarray
@@ -47,12 +47,12 @@ class ngsimDataset(Dataset):
 
         # Maneuvers 'lon_enc' = one-hot vector, 'lat_enc = one-hot vector
         lon_enc = np.zeros([self.n_lon])
-        lon_enc[int(self.lon_int[idx] - 1)] = 1
-        # lon_enc[int(self.D[idx, 7] - 1)] = 1
+        # lon_enc[int(self.lon_int[idx] - 1)] = 1
+        lon_enc[int(self.D[idx, 9] - 1)] = 1
 
         lat_enc = np.zeros([self.n_lat])
-        lat_enc[int(self.lat_int[idx] - 1)] = 1
-        # lat_enc[int(self.D[idx, 6] - 1)] = 1
+        # lat_enc[int(self.lat_int[idx] - 1)] = 1
+        lat_enc[int(self.D[idx, 8] - 1)] = 1
 
         return hist, fut, neighbors, lat_enc, lon_enc, dsId, vehId, t
 
@@ -424,3 +424,24 @@ def logsumexp(inputs, dim=None, keepdim=False):
     if not keepdim:
         outputs = outputs.squeeze(dim)
     return outputs
+
+
+def horiz_eval(loss_total, n_horiz):
+    loss_total = loss_total.cpu().numpy()
+    avg_res = np.zeros(n_horiz)
+    n_all = loss_total.shape[0]
+    n_frames = n_all//n_horiz
+    for i in range(n_horiz):
+        if i==0:
+            st_id = 0
+        else:
+            st_id = n_frames*i
+
+        if i == n_horiz-1:
+            en_id = n_all-1
+        else:
+            en_id = n_frames*i + n_frames - 1
+
+        avg_res[i] = np.mean(loss_total[st_id:en_id+1])
+
+    return avg_res

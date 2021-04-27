@@ -1,7 +1,7 @@
 # Network Arguments
 #-------------------
 args = {}
-args['use_cuda'] = False
+args['use_cuda'] = True
 args['encoder_size'] = 64
 args['decoder_size'] = 128
 args['in_length'] = 16
@@ -45,3 +45,6 @@ args['skip_factor'] = 2 #d_s
 
 args['pretrainEpochs'] = 5
 args['trainEpochs'] = 3
+
+# Prediction horizon used in evaluation
+args['pred_horiz'] = 5

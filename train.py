@@ -41,9 +41,9 @@ batch_size = 128
 crossEnt = torch.nn.BCELoss()
 
 ## Initialize data loaders
-valSet = ngsimDataset('data/ValSet_mnvr_new_corrected.mat')
-# trSet = ngsimDataset('data/ValSet_mnvr_new_corrected.mat')
-trSet = ngsimDataset('data/TrainSet_mnvr_new_corrected_1.mat')
+valSet = ngsimDataset('data/ValSet.mat')
+trSet = ngsimDataset('data/ValSet.mat')
+# trSet = ngsimDataset('data/TrainSet.mat')
 
 
 trDataloader = DataLoader(trSet,batch_size=batch_size,shuffle=True,num_workers=8,collate_fn=trSet.collate_fn)
@@ -218,13 +218,13 @@ model_fname = 'trained_models/'+args['pooling']
 if args['intention_module']:
 
     if args['input_dim']==3:
-        model_fname = model_fname + 'Vel_mnvr.tar'
+        model_fname = model_fname + 'vel_int.tar'
     else:
-        model_fname = model_fname + '_mnvr.tar'
+        model_fname = model_fname + '_int.tar'
 
 else:
     if args['input_dim'] == 3:
-        model_fname = model_fname + '_Vel.tar'
+        model_fname = model_fname + '_vel.tar'
     else:
         model_fname = model_fname + '.tar'
 
