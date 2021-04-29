@@ -37,10 +37,9 @@ elif args['pooling'] == 'sgan' or args['pooling'] == 'polar':
     args['bottleneck_dim'] = 256
     args['sgan_batch_norm'] = False
 
-
 #ngsimDataset Class in utils.py
 args['t_hist'] = 30
-args['t_fut'] = 50 
+args['t_fut'] = 50
 args['skip_factor'] = 2 #d_s
 
 args['pretrainEpochs'] = 5
