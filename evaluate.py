@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 import time
 import numpy as np
 from pathlib import Path
+import pandas as pd
 
 #Ignore the warnings
 import warnings
@@ -45,17 +46,18 @@ else:
 # Test Cases
 test_dataset_files = ['TestSet', 'TestSet_keep', 'TestSet_merge', 'TestSet_left',   'TestSet_right']
 test_cases = ['overall', 'keep', 'merge', 'left', 'right']
+rmse_eval = np.zeros([pred_horiz, len(test_cases)])
 
 if args['intention_module']:
     if args['input_dim']==3:
-        outf_bname = 'evaluation/' + args['pooling'] + '_int_vel/'
+        eval_fname = 'evaluation/' + args['pooling'] + '_int_vel.csv'
     else:
-        outf_bname = 'evaluation/' + args['pooling'] + '_int/'
+        eval_fname = 'evaluation/' + args['pooling'] + '_int.csv'
 else:
     if args['input_dim'] == 3:
-        outf_bname = 'evaluation/' + args['pooling'] + '_vel/'
+        eval_fname = 'evaluation/' + args['pooling'] + '_vel.csv'
     else:
-        outf_bname = 'evaluation/' + args['pooling'] + '/'
+        eval_fname = 'evaluation/' + args['pooling'] + '.csv'
 
 for ds_ctr, ds_name in enumerate(test_dataset_files):
 
@@ -113,12 +115,11 @@ for ds_ctr, ds_name in enumerate(test_dataset_files):
     # Prediction Horizon of 5s
     pred_rmse_horiz = horiz_eval(pred_rmse, pred_horiz)
     print(pred_rmse_horiz)
+    rmse_eval[:, ds_ctr] = pred_rmse_horiz
 
-    Path(outf_bname).mkdir(parents=True, exist_ok=True)
-    fname = outf_bname + test_cases[ds_ctr] + '.csv'
-    rmse_file = open(fname, 'ab')
-    np.savetxt(rmse_file, pred_rmse_horiz)
-    rmse_file.close()
+# Saving Results to a csv file
+df = pd.DataFrame(rmse_eval)
+df.to_csv(eval_fname, header=test_cases,index=False)
 
 
 
