@@ -117,7 +117,7 @@ for ds_ctr, ds_name in enumerate(test_dataset_files):
     Path(outf_bname).mkdir(parents=True, exist_ok=True)
     fname = outf_bname + test_cases[ds_ctr] + '.csv'
     rmse_file = open(fname, 'ab')
-    np.savetxt(rmse_file, pred_rmse_horiz.cpu().numpy())
+    np.savetxt(rmse_file, pred_rmse_horiz)
     rmse_file.close()
 
 
