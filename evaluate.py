@@ -1,56 +1,22 @@
 from __future__ import print_function
 import torch
 from model import highwayNet
-from utils import ngsimDataset, maskedNLL, maskedMSE, maskedNLLTest, maskedMSETest
+from utils import ngsimDataset, maskedMSETest, horiz_eval
 from torch.utils.data import DataLoader
 import time
 import numpy as np
+from pathlib import Path
+
+#Ignore the warnings
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
 
 #Import the argumnets
-from exp_args import args
-
-# # Network Arguments
-# #-------------------
-# args = {}
-# args['use_cuda'] = True
-# args['encoder_size'] = 64
-# args['decoder_size'] = 128
-# args['in_length'] = 16
-# args['out_length'] = 25
-# args['grid_size'] = (13,3)
-# args['dyn_embedding_size'] = 32
-# args['input_embedding_size'] = 32
-# args['num_lat_classes'] = 3
-# args['num_lon_classes'] = 3
-# args['train_flag'] = False
-#
-# # Dimensionality of the input:
-# # 2D (X and Y or R and Theta)
-# # 3D (adding velocity as a 3d dimension)
-# args['input_dim'] = 3
-#
-# # Using Intention module?
-# args['intention_module'] = True
-#
-# # Choose the pooling mechanism
-# # 'slstm', 'cslstm', 'sgan', 'polar'
-# # -----------------------------
-# args['pooling'] = 'polar'
+from model_args import args
 
 # Evaluation mode
 args['train_flag'] = False
-
-if args['pooling'] == 'slstm':
-    args['kernel_size'] = (4, 3)
-
-elif args['pooling'] == 'cslstm':
-    args['soc_conv_depth'] = 64
-    args['conv_3x1_depth'] = 16
-
-elif args['pooling'] == 'sgan' or args['pooling'] == 'polar':
-    args['bottleneck_dim'] = 256
-    args['sgan_batch_norm'] = False
-
+pred_horiz = args['pred_horiz']
 
 # Initialize network
 # ------------------
@@ -60,12 +26,12 @@ net = highwayNet(args)
 net_fname = 'trained_models/' + args['pooling']
 if args['intention_module']:
     if args['input_dim']==3:
-        net_fname = net_fname + 'Vel_mnvr.tar'
+        net_fname = net_fname + '_vel_int.tar'
     else:
-        net_fname = net_fname + '_mnvr.tar'
+        net_fname = net_fname + '_int.tar'
 else:
     if args['input_dim'] == 3:
-        net_fname = net_fname + '_Vel.tar'
+        net_fname = net_fname + '_vel.tar'
     else:
         net_fname = net_fname + '.tar'
 
@@ -77,25 +43,21 @@ else:
     net.load_state_dict(torch.load(net_fname , map_location= lambda storage, loc: storage), strict=False)
 
 # Test Cases
-# us101, i80
-ds_name = 'i80'
-test_dataset_files = ['TestSet_mnvr_new_corrected', 'TestSet_mnvr_new_corrected_' + ds_name + '_arb_left', 'TestSet_mnvr_new_corrected_' + ds_name + '_keeping',
-                       'TestSet_mnvr_new_corrected_' + ds_name + '_merging', 'TestSet_mnvr_new_corrected_' + ds_name + '_right']
-
+test_dataset_files = ['TestSet', 'TestSet_keep', 'TestSet_merge', 'TestSet_left',   'TestSet_right']
+test_cases = ['overall', 'keep', 'merge', 'left', 'right']
 
 if args['intention_module']:
     if args['input_dim']==3:
-        outf_bname = 'outfiles/' + args['pooling'] + '_mnvr_V/'
+        outf_bname = 'evaluation/' + args['pooling'] + '_int_vel/'
     else:
-        outf_bname = 'outfiles/' + args['pooling'] + '_mnvr/'
+        outf_bname = 'evaluation/' + args['pooling'] + '_int/'
 else:
     if args['input_dim'] == 3:
-        outf_bname = 'outfiles/' + args['pooling'] + '_Vel/'
+        outf_bname = 'evaluation/' + args['pooling'] + '_vel/'
     else:
-        outf_bname = 'outfiles/' + args['pooling'] + '/'
+        outf_bname = 'evaluation/' + args['pooling'] + '/'
 
 for ds_ctr, ds_name in enumerate(test_dataset_files):
-
 
     ## Initialize data loaders
     tstSubset = ds_name
@@ -147,12 +109,15 @@ for ds_ctr, ds_name in enumerate(test_dataset_files):
 
     print(tstSubset)
     # Calculate RMSE in meters
-    print(torch.pow(lossVals / counts, 0.5) * 0.3048)
-    loss_total = torch.pow(lossVals / counts, 0.5)* 0.3048
-    fname = outf_bname + tstSubset + '_rmse_from_code.csv'
+    pred_rmse = torch.pow(lossVals / counts, 0.5) * 0.3048
+    # Prediction Horizon of 5s
+    pred_rmse_horiz = horiz_eval(pred_rmse, pred_horiz)
+    print(pred_rmse_horiz)
+
+    Path(outf_bname).mkdir(parents=True, exist_ok=True)
+    fname = outf_bname + test_cases[ds_ctr] + '.csv'
     rmse_file = open(fname, 'ab')
-    np.savetxt(rmse_file, loss_total.cpu().numpy())
-    # Close the opened files
+    np.savetxt(rmse_file, pred_rmse_horiz.cpu().numpy())
     rmse_file.close()
 
 
