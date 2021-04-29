@@ -34,11 +34,11 @@ and grey vehicle shows a non-covered neighbor).
 * Left: a spatial grid is centered around the ego vehicle. 
 The social tensor is structured accordingly and populated
 with LSTM states of the ego and exisiting neighbor vehicles. 
-  The social tensor is used with Social LSTM and Covolutional Social Pooling works.
+  The social tensor is used with [Social LSTM](http://vision.stanford.edu/pdf/alahi2016cvpr.pdf) and [Covolutional Social Pooling](https://arxiv.org/pdf/1805.06771.pdf) (CSP) works.
 #  
 * Center: relative positions between the ego vehicle and 
   all its neighbors are concatenated to vehicle LSTM states. This is 
-  the pooling strategy used in Social GAN work.
+  the pooling strategy used in [Social GAN](https://arxiv.org/pdf/1803.10892.pdf) work.
 #  
 * Right: the proposed pooling strategy where vehicle LSTM 
   states are concatenated to relative polar positions 
@@ -49,14 +49,16 @@ with LSTM states of the ego and exisiting neighbor vehicles.
 The NGSIM  public  dataset  is  used  for  our  experiments. The
 dataset  consists  of  two  subsets:  [US-101](https://www.fhwa.dot.gov/publications/research/operations/07030/index.cfm)   
 and [I-80](https://www.fhwa.dot.gov/publications/research/operations/06137/). 
-Download the raw (.txt) files of both subsets, and then run the following MATLAB script:
+Download the raw (.txt) files of both subsets, 
+and then run the following MATLAB script:
 
 ```
 preprocess_ngsim.m
 ```
 
 This will preprocess the dataset, splits it into train, validation and test subsets, 
-and save that to the 'data' directory.
+and save that to the 'data' directory. In addition, the test subset will be further split 
+to perform the maneuver-based evaluation for the keep, merge, left and right maneuvers.
 
 ## Model Arguments
 The default network arguments are in:
@@ -71,9 +73,9 @@ You can also set the required experiment arguments in this script. For example:
   'slstm' (Social LSTM), 'cslstm' (Convolutional Social Pooling), or 'sgan' (Social GAN).
   
 ## Model Training and Evaluation
-The model structure is coded in 'model.py'. 
-We extend the features of the basic model of an extension 
-of [CSP](https://github.com/nachiket92/conv-social-pooling).
+The model structure is coded in 'model.py'. We extended the
+[CSP work](https://github.com/nachiket92/conv-social-pooling) to: 
+(1) incorporate our benchmark pooling strategies, and (2) use multi-variate Gaussian distribution. 
 After setting the required experiment arguments, 
 you can start model training by running:
 ```
