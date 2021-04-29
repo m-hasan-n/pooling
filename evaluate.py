@@ -118,6 +118,7 @@ for ds_ctr, ds_name in enumerate(test_dataset_files):
     rmse_eval[:, ds_ctr] = pred_rmse_horiz
 
 # Saving Results to a csv file
+rmse_eval = np.around(rmse_eval, decimals=2)
 df = pd.DataFrame(rmse_eval)
 df.to_csv(eval_fname, header=test_cases,index=False)
 
