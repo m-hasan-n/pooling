@@ -74,7 +74,7 @@ You can also set the required experiment arguments in this script. For example:
   
 ## Model Training and Evaluation
 The model structure is coded in 'model.py'. We extended the
-[CSP work](https://github.com/nachiket92/conv-social-pooling) to: 
+[CSP](https://github.com/nachiket92/conv-social-pooling) work to: 
 (1) incorporate our benchmark pooling strategies, and (2) use multi-variate Gaussian distribution. 
 After setting the required experiment arguments, 
 you can start model training by running:
