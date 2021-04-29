@@ -39,8 +39,8 @@ elif args['pooling'] == 'sgan' or args['pooling'] == 'polar':
 
 
 #ngsimDataset Class in utils.py
-args['t_hist'] = 30 #t_h
-args['t_fut'] = 50 #t_f
+args['t_hist'] = 30
+args['t_fut'] = 50 
 args['skip_factor'] = 2 #d_s
 
 args['pretrainEpochs'] = 5
