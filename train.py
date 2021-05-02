@@ -13,18 +13,6 @@ from model_args import args
 #Ignore the warnings
 warnings.filterwarnings("ignore", category=UserWarning)
 
-if args['pooling'] == 'slstm':
-    args['kernel_size'] = (4, 3)
-
-elif args['pooling'] == 'cslstm':
-    args['soc_conv_depth'] = 64
-    args['conv_3x1_depth'] = 16
-
-elif args['pooling'] == 'sgan' or args['pooling'] == 'polar':
-    args['bottleneck_dim'] = 256
-    args['sgan_batch_norm'] = False
-
-
 # Initialize network
 # ------------------
 net = highwayNet(args)
