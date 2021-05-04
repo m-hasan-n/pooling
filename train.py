@@ -11,7 +11,7 @@ import warnings
 from model_args import args
 
 #Ignore the warnings
-warnings.filterwarnings("ignore", category=UserWarning)
+# warnings.filterwarnings("ignore", category=UserWarning)
 
 # Initialize network
 # ------------------
@@ -30,7 +30,8 @@ crossEnt = torch.nn.BCELoss()
 
 ## Initialize data loaders
 valSet = ngsimDataset('data/ValSet.mat')
-trSet = ngsimDataset('data/TrainSet.mat')
+# trSet = ngsimDataset('data/TrainSet.mat')
+trSet = ngsimDataset('data/ValSet.mat')
 
 
 trDataloader = DataLoader(trSet,batch_size=batch_size,shuffle=True,num_workers=8,collate_fn=trSet.collate_fn)
