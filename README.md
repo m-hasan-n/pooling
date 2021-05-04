@@ -1,7 +1,6 @@
 # Maneuver-Aware Pooling for Vehicle Trajectory Prediction
 
-This project focuses on predicting the behavior of  
-the vehicles surrounding an autonomous vehicle on highways. 
+This project focuses on predicting the behavior of the vehicles surrounding an autonomous vehicle on highways. 
 We are motivated by improving the prediction accuracy when a 
 vehicles perform lane change and highway merging 
 maneuvers. 
@@ -12,6 +11,7 @@ We propose a novel pooling strategy to capture
 the inter-dependencies between the neighbor vehicles. 
 Our pooling mechanism employs polar trajectory 
 representation, vehicles orientation and radial velocity. 
+
 This results in an implicitly maneuver-aware pooling operation.
 We incorporated the proposed pooling mechanism into a generative
 encoder-decoder model, and evaluated our method on the public 
