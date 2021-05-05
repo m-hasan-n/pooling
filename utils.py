@@ -307,7 +307,7 @@ def maskedNLLTest(fut_pred, lat_pred, lon_pred, fut, op_mask, num_lat_classes=3,
         count = 0
         for k in range(num_lon_classes):
             for l in range(num_lat_classes):
-                wts = lat_pred[:,l]*lon_pred[:,k]
+                wts = (lat_pred[:,l]*lon_pred[:,k]).cuda()
                 wts = wts.repeat(len(fut_pred[0]),1)
                 y_pred = fut_pred[k*num_lat_classes + l]
                 y_gt = fut
