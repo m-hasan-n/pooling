@@ -16,7 +16,7 @@ args['train_flag'] = True
 # Dimensionality of the input:
 # 2D (X and Y or R and Theta)
 # 3D (adding velocity as a 3d dimension)
-args['input_dim'] = 3
+args['input_dim'] = 2
 
 # Using Intention module?
 args['intention_module'] = True
@@ -24,7 +24,7 @@ args['intention_module'] = True
 # Choose the pooling mechanism
 # 'slstm', 'cslstm', 'sgan', 'polar'
 # -----------------------------
-args['pooling'] = 'polar'
+args['pooling'] = 'slstm'
 
 if args['pooling'] == 'slstm':
     args['kernel_size'] = (4, 3)
