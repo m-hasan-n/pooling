@@ -42,7 +42,7 @@ args['t_hist'] = 30
 args['t_fut'] = 50
 args['skip_factor'] = 2 #d_s
 
-args['pretrainEpochs'] = 0
+args['pretrainEpochs'] = 5
 args['trainEpochs'] = 3
 
 # Prediction horizon used in evaluation
