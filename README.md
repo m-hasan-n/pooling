@@ -90,7 +90,7 @@ If you find this code useful for your research, please cite [our work](https://a
 
 * Mohamed Hasan, Albert Solernou, Evangelos Paschalidis, 
   He Wang, Gustav Markkula and Richard Romano, 
-  "Maneuver-Aware Pooling for Vehicle Trajectory Prediction", under review IROS 2021.
+  "Maneuver-Aware Pooling for Vehicle Trajectory Prediction", preprint 2021.
 
 ## License
 This project is licensed under the MIT License - see the 
